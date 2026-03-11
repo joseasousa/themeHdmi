@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -30,11 +29,13 @@ public class LauncherActivityInstrumentedTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         context.getSharedPreferences("startup_prefs", Context.MODE_PRIVATE).edit().clear().commit();
         HdmiControllerProvider.clearTestController();
+        WriteSettingsPermissionManager.setTestCanWrite(true);
     }
 
     @After
     public void tearDown() {
         HdmiControllerProvider.clearTestController();
+        WriteSettingsPermissionManager.clearTestOverride();
     }
 
     @Test
@@ -84,6 +85,31 @@ public class LauncherActivityInstrumentedTest {
             onView(withId(R.id.textStatus)).check(matches(withText("HDMI switch command sent successfully.")));
             onView(withId(R.id.textGuidance)).check(matches(withEffectiveVisibility(androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE)));
             onView(withId(R.id.buttonRetry)).check(matches(withEffectiveVisibility(androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE)));
+        }
+    }
+
+    @Test
+    public void missingWriteSettingsPermission_showsWarningOnStartup() {
+        WriteSettingsPermissionManager.setTestCanWrite(false);
+
+        try (ActivityScenario<LauncherActivity> ignored = ActivityScenario.launch(LauncherActivity.class)) {
+            onView(withId(R.id.textPermissionWarning)).check(matches(isDisplayed()));
+            onView(withId(R.id.buttonGrantPermission)).check(matches(isDisplayed()));
+        }
+    }
+
+    @Test
+    public void missingWriteSettingsPermission_stillAttemptsSwitch() {
+        WriteSettingsPermissionManager.setTestCanWrite(false);
+        HdmiControllerProvider.setTestController(port -> HdmiSwitchResult.success());
+
+        try (ActivityScenario<LauncherActivity> ignored = ActivityScenario.launch(LauncherActivity.class)) {
+            onView(withId(R.id.radioHdmi1)).perform(click());
+            onView(withId(R.id.buttonSavePort)).perform(click());
+            onView(withId(R.id.buttonGoHdmi)).perform(click());
+
+            onView(withId(R.id.textPermissionWarning)).check(matches(isDisplayed()));
+            onView(withId(R.id.textStatus)).check(matches(withText("HDMI switch command sent successfully.")));
         }
     }
 }

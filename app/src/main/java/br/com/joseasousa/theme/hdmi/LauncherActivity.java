@@ -13,14 +13,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public final class LauncherActivity extends AppCompatActivity {
     private StartupCoordinator startupCoordinator;
+    private boolean hasOpenedWriteSettingsScreen;
 
     private View setupContainer;
     private RadioGroup radioGroupPorts;
     private Button buttonSavePort;
     private Button buttonGoHdmi;
     private Button buttonRetry;
+    private Button buttonGrantPermission;
     private TextView textStatus;
     private TextView textGuidance;
+    private TextView textPermissionWarning;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,6 +38,15 @@ public final class LauncherActivity extends AppCompatActivity {
         bindViews();
         initActions();
         renderInitialState();
+        renderPermissionState();
+        maybeOpenWriteSettingsScreen();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        renderPermissionState();
+        maybeOpenWriteSettingsScreen();
     }
 
     private void bindViews() {
@@ -43,8 +55,10 @@ public final class LauncherActivity extends AppCompatActivity {
         buttonSavePort = findViewById(R.id.buttonSavePort);
         buttonGoHdmi = findViewById(R.id.buttonGoHdmi);
         buttonRetry = findViewById(R.id.buttonRetry);
+        buttonGrantPermission = findViewById(R.id.buttonGrantPermission);
         textStatus = findViewById(R.id.textStatus);
         textGuidance = findViewById(R.id.textGuidance);
+        textPermissionWarning = findViewById(R.id.textPermissionWarning);
     }
 
     private void initActions() {
@@ -63,6 +77,14 @@ public final class LauncherActivity extends AppCompatActivity {
         View.OnClickListener switchListener = v -> performHdmiSwitch();
         buttonGoHdmi.setOnClickListener(switchListener);
         buttonRetry.setOnClickListener(switchListener);
+
+        buttonGrantPermission.setOnClickListener(v -> {
+            boolean opened = WriteSettingsPermissionManager.openBestSettingsScreen(this);
+            int messageId = opened
+                    ? R.string.write_settings_permission_opened
+                    : R.string.write_settings_permission_unavailable;
+            Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void renderInitialState() {
@@ -80,6 +102,11 @@ public final class LauncherActivity extends AppCompatActivity {
     }
 
     private void performHdmiSwitch() {
+        if (!WriteSettingsPermissionManager.canWrite(this)) {
+            renderPermissionState();
+            Toast.makeText(this, R.string.write_settings_permission_missing_toast, Toast.LENGTH_SHORT).show();
+        }
+
         HdmiSwitchResult result = startupCoordinator.attemptSwitch();
         if (result.isSuccess()) {
             textStatus.setText(R.string.switch_success);
@@ -108,6 +135,24 @@ public final class LauncherActivity extends AppCompatActivity {
             return HdmiPort.valueOf(tag.toString());
         } catch (IllegalArgumentException ex) {
             return null;
+        }
+    }
+
+    private void renderPermissionState() {
+        boolean hasPermission = WriteSettingsPermissionManager.canWrite(this);
+        int visibility = hasPermission ? View.GONE : View.VISIBLE;
+        textPermissionWarning.setVisibility(visibility);
+        buttonGrantPermission.setVisibility(visibility);
+    }
+
+    private void maybeOpenWriteSettingsScreen() {
+        if (hasOpenedWriteSettingsScreen || WriteSettingsPermissionManager.canWrite(this)) {
+            return;
+        }
+        hasOpenedWriteSettingsScreen = true;
+        boolean opened = WriteSettingsPermissionManager.openBestSettingsScreen(this);
+        if (opened) {
+            Toast.makeText(this, R.string.write_settings_permission_opened, Toast.LENGTH_SHORT).show();
         }
     }
 }
