@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/launcher_title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
+
+        <TextView
+            android:id="@+id/textSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/launcher_subtitle" />
+
+        <LinearLayout
+            android:id="@+id/setupContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setup_port_prompt"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupPorts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <RadioButton
+                    android:id="@+id/radioHdmi1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:tag="HDMI1"
+                    android:text="@string/port_hdmi_1" />
+
+                <RadioButton
+                    android:id="@+id/radioHdmi2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:tag="HDMI2"
+                    android:text="@string/port_hdmi_2" />
+
+                <RadioButton
+                    android:id="@+id/radioHdmi3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:tag="HDMI3"
+                    android:text="@string/port_hdmi_3" />
+
+                <RadioButton
+                    android:id="@+id/radioLastUsed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:tag="LAST_USED"
+                    android:text="@string/port_last_used" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/buttonSavePort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/save_port" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonGoHdmi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/go_to_hdmi" />
+
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/setup_required_status" />
+
+        <TextView
+            android:id="@+id/textGuidance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/switch_guidance"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/buttonRetry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/retry_switch"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>
