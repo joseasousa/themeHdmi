@@ -1,15 +1,45 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Android / Gradle
+.gradle/
+build/
+*/build/
+out/
+*/out/
+
+# Local machine configuration
 local.properties
+
+# Android build artifacts
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Proguard/R8 and profiling artifacts
+proguard/
+*.hprof
+
+# Signing / secrets
+*.jks
+*.keystore
+key.properties
+
+# IDE (Android Studio / IntelliJ)
+.idea/
+*.iml
+
+# Keep Gradle wrapper JAR versioned
+!gradle/wrapper/gradle-wrapper.jar
+
+# OS / editor temp files
+.DS_Store
+Thumbs.db
+*.log
+*~
+*.swp
+
+# Optional: ignore if it contains sensitive values
+google-services.json
